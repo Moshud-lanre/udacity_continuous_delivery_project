@@ -89,7 +89,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-    - run:
+      - run:
         name: Backend unit test
         command: |
           cd backend
