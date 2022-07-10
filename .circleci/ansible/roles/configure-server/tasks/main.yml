@@ -1,0 +1,45 @@
+- name: "update apt packages. "
+  become: true
+  apt: 
+    update_cache: yes
+
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: yes
+
+- name: "remove dependencies that's not needed again"
+  become: true
+  apt:
+    autoremove: yes
+
+- name: "Install dependencies."
+  become: true 
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "Install pm2"
+  become: true
+  npm: 
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+# - name: "Install python"
+#   hosts: python
+#   become: true
+#   gather_facts: no
+#   pre_tasks:
+#     - name: install python
+#       raw: 'cat < /home/ubuntu/script.sh'
+#       args:
+#         executable: /bin/bash
+
+- name: "Install Python"
+  become: true
+  raw: apt install -y python
+
+  
