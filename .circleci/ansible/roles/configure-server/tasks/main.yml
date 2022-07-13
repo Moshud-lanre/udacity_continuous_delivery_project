@@ -1,3 +1,5 @@
+---
+
 - name: "update apt packages. "
   become: true
   apt: 
@@ -38,8 +40,8 @@
 #       args:
 #         executable: /bin/bash
 
-- name: "Install Python"
-  become: true
-  raw: apt install -y python
+# - name: "Install Python"
+#   become: true
+#   raw: apt install -y python
 
   
