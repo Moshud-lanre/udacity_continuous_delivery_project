@@ -166,13 +166,14 @@ jobs:
       # Adds ssh keys with fingerprint
       - add_ssh_keys:
               fingerprints: ["85:ef:ba:0f:29:8b:b3:db:15:0d:34:28:9a:19:f6:d8"]
-      - run: yum install -y tar gzip
+      
       # attach workspace
       - attach_workspace:
           at: ~/
       - run:
           name: Install dependencies
           command: |
+            pip install -y tar gzip
             apk add --update ansible
             
       - run:
