@@ -173,8 +173,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip install -y tar gzip
             apk add --update ansible
+            cat .circleci/ansible/inventory.txt
             
       - run:
           name: Configure server
