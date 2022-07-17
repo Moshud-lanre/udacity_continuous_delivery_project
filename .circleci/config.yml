@@ -26,7 +26,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure https://kvdb.io/WEmhbY71vVnM6sjoH9rE6w/migration_${CIRCLE_WORKFLOW_Id:0:7})
+            SUCCESS=$(curl --insecure https://kvdb.io/WEmhbY71vVnM6sjoH9rE6w/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $SUCCESS == 1 )); 
             then
              cd ~/project/backend
@@ -153,7 +153,7 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project, Values=udapeople" --output text >> inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project, Values=udapeople-backend${CIRCLE_WORKFLOW_ID:0:7}" --output text >> inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
