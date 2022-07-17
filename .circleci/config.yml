@@ -326,13 +326,13 @@ jobs:
             apk add --update npm nodejs 
             apk add --update curl aws-cli
             pip install awscli
-      - attach_workspace:
-          at: ~/ 
+      # - attach_workspace:
+      #     at: ~/ 
       - run:
           name: Backend smoke-test
           command: |
-            export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)
-            # export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:aws:cloudformation:stack-name, Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
+            # export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:aws:cloudformation:stack-name, Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi             
