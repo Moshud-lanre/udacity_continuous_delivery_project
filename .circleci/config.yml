@@ -297,6 +297,7 @@ jobs:
           command: |
             apk add --update ansible aws-cli
             apk add --update tar gzip 
+            apk add --update curl
             apk add --update npm nodejs
             # pip install awscli
       # - restore_cache:
