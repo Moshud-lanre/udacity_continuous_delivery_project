@@ -172,6 +172,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible tar gzip aws-cli 
+            apk add --update openssh 
       # attach workspace
       - attach_workspace:
           at: .circleci/ansible    
