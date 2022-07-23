@@ -401,7 +401,7 @@ jobs:
 #               # your code here
 #             fi
             
-#Smoke test build is being tested.S
+#Smoke test build is being tested.
 workflows:
   default:
     jobs:
