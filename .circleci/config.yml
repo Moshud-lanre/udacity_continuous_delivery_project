@@ -357,7 +357,7 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"; then return 0; else return 1; fi             
-# --connect-timeout 5
+
       - run:
           name: Frontend smoke test.
           command: |
@@ -366,43 +366,80 @@ jobs:
             if curl -s ${url} | grep "Welcome"; then return 0; else return 1; fi
             
 #       # Here's where you will add some code to rollback on failure  
-      # - destroy-environment
+      - destroy-environment
       - revert-migrations
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  cloudfront-update:
+    docker:
+      - image: python:3.9.1-alpine3.12
+    steps:
+      - checkout  
+      - run:
+          name: Install dependencies
+          command: |
+             apk add --update npm nodejs 
+             apk add --update  aws-cli
+      - run:
+          name: Get and save Old workflowID to textfile
+          command: |
+              WORKFLOWID=$(aws cloudformation \
+               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+               --no-paginate --output text )
+               echo $WORKFLOWID > ~/old_workflow.txt
+              cat ~/old_workflow.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - old_workflow.txt
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name InitialStack
+      # Here's where you will add some code to rollback on failure  
+      - destroy-environment
+      - revert-migrations
+cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout 
+      - run: 
+          name: Install dependencies
+          command: |
+              yum install -y tar gzip 
+      - attach_workspace:
+          at: ~/ 
+      - run:
+          name: Get old stack workflow id
+          command: |
+          
+            export OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+             --no-paginate --output text)
+             
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
 
-# cleanup:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Get old stack workflow id
-#           command: |
-#             # your code here
-#             export OldWorkflowID="the id here"
-#             export STACKS=[] #put the list of stacks here
-#       - run:
-#           name: Remove old stacks and files
-#           command: |
-#             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-#             then
-#               # your code here
-#             fi
+            #Fetch the stack names 
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}" 
+      - run:
+          name: Remove old stacks and files
+          command: |
+            if [ "$OldWorkflowID" != "${CIRCLE_WORKFLOW_ID:0:7}" ]
+            then
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              then
+                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive || true
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}" || true
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}" || true
+              fi
+            fi
             
-#Smoke test build is being tested.
+
 workflows:
   default:
     jobs:
@@ -431,7 +468,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
+      - cloudfront-update:
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
