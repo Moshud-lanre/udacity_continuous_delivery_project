@@ -306,7 +306,7 @@ jobs:
             apk add --update curl
             apk add --update npm nodejs
             apk add --update openssh
-            # pip install awscli
+            
       
       - run:
           name: Deploy backend
