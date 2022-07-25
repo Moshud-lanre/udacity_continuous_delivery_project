@@ -229,7 +229,6 @@ jobs:
               npm install
               #npm audit fix --audit-level=critical --force
               # npm audit fix
-              # run and save the migration output
               npm run migrations:revert
               npm run migrations > migrations_dump.txt
               echo "has been executed successfully." >> migrations_dump.txt 
