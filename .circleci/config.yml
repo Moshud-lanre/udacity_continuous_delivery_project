@@ -362,6 +362,7 @@ jobs:
           command: |
              apk add --update npm nodejs 
              apk add --update  aws-cli
+             apk add --update  curl
       - run:
           name: Get and save Old workflowID to textfile
           command: |
