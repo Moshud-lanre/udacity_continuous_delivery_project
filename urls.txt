@@ -1,9 +1,9 @@
 [URL01] - https://github.com/Moshud-lanre/udacity_continuous_delivery_project
 
-[URL02] - 
+[URL02] - http://udapeople-09c8a79.s3-website-us-east-1.amazonaws.com
 
-[URL03] - 
+[URL03] - http://d21mg4jj5m1sap.cloudfront.net/#/employees
 
-[UR04] - 
+[UR04] - http://ec2-44-201-252-13.compute-1.amazonaws.com/
 
-[URL05] - 
+[URL05] - http://ec2-54-208-110-205.compute-1.amazonaws.com:9090/targets 
